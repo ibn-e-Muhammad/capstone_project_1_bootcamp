@@ -450,50 +450,6 @@ with st.sidebar:
                 Alerts &amp; History</p>
         </div>
         <div style="padding:12px; display:flex; flex-direction:column; gap:10px;">
-
-            <!-- Alert: Critical -->
-            <div style="display:flex; gap:12px; padding:10px; border-radius:6px;">
-                <span class="material-symbols-outlined" style="color:#D30017; font-size:18px; flex-shrink:0;">warning</span>
-                <div>
-                    <p style="font-size:11px; font-weight:700; color:#E5E2E1; margin:0 0 3px;">Thermal Spike Detected</p>
-                    <p style="font-size:9px; color:#BACAC3; margin:0 0 4px; line-height:1.5;">
-                        Core temp exceeded threshold on Spindle 02. Auto-cooling engaged.</p>
-                    <span style="font-size:9px; font-family:monospace; color:#D30017; text-transform:uppercase;">{NOW} · Critical</span>
-                </div>
-            </div>
-
-            <!-- Alert: Anomaly -->
-            <div style="display:flex; gap:12px; padding:10px; border-radius:6px;">
-                <span class="material-symbols-outlined" style="color:#F08C00; font-size:18px; flex-shrink:0;">error</span>
-                <div>
-                    <p style="font-size:11px; font-weight:700; color:#E5E2E1; margin:0 0 3px;">Vibration Anomaly</p>
-                    <p style="font-size:9px; color:#BACAC3; margin:0 0 4px; line-height:1.5;">
-                        Minor harmonic deviance noted in X-axis movement.</p>
-                    <span style="font-size:9px; font-family:monospace; color:#F08C00; text-transform:uppercase;">14:15:44 · Anomaly</span>
-                </div>
-            </div>
-
-            <!-- Alert: Routine -->
-            <div style="display:flex; gap:12px; padding:10px; border-radius:6px;">
-                <span class="material-symbols-outlined" style="color:#45FDD2; font-size:18px; flex-shrink:0;">check_circle</span>
-                <div>
-                    <p style="font-size:11px; font-weight:700; color:#E5E2E1; margin:0 0 3px;">Routine Calibration</p>
-                    <p style="font-size:9px; color:#BACAC3; margin:0 0 4px; line-height:1.5;">
-                        Sensor sync complete. Zero-point verified.</p>
-                    <span style="font-size:9px; font-family:monospace; color:#BACAC3; text-transform:uppercase;">13:50:00 · Routine</span>
-                </div>
-            </div>
-
-            <!-- Alert: Startup -->
-            <div style="display:flex; gap:12px; padding:10px; border-radius:6px;">
-                <span class="material-symbols-outlined" style="color:#45FDD2; font-size:18px; flex-shrink:0;">check_circle</span>
-                <div>
-                    <p style="font-size:11px; font-weight:700; color:#E5E2E1; margin:0 0 3px;">System Startup</p>
-                    <p style="font-size:9px; color:#BACAC3; margin:0 0 4px; line-height:1.5;">
-                        STATION_04 initialized by Oper_092.</p>
-                    <span style="font-size:9px; font-family:monospace; color:#BACAC3; text-transform:uppercase;">08:00:00 · Routine</span>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -504,7 +460,7 @@ with st.sidebar:
         <span class="material-symbols-outlined" style="color:#BACAC3; font-size:18px;">settings</span>
         <span>Settings</span>
     </div>
-    """), unsafe_allow_html=True)
+    """).strip(), unsafe_allow_html=True)
 
     # Logout button
     if st.button("↩  System Logout", use_container_width=True):
@@ -597,7 +553,7 @@ col_ring, col_prob = st.columns([4, 8], gap="medium")
 with col_ring:
     ring_border_style = f"border-color:{accent_color}; border-top-color:transparent;"
     inner_glow = f"box-shadow: 0 0 20px {'rgba(211,0,23,0.3)' if is_critical else 'rgba(69,253,210,0.2)'};"
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div style="background:#2A2A2A; padding:2.5rem; border-radius:12px; height:100%;
                 display:flex; flex-direction:column; justify-content:center; align-items:center;
                 position:relative; overflow:hidden; min-height:260px;">
@@ -626,79 +582,8 @@ with col_ring:
                 Operational Stability: {'⚠ CRITICAL' if is_critical else 'Optimal'}</p>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """).strip(), unsafe_allow_html=True)
 
-with col_prob:
-    # Safe bar width: failure_pct is the danger zone, health is safe
-    safe_w = max(0, min(100 - failure_pct, 100))
-    danger_w = 100 - safe_w
-    st.markdown(f"""
-    <div style="background:rgba(42,42,42,0.7); backdrop-filter:blur(24px); padding:2.5rem;
-                border-radius:12px; height:100%; min-height:260px;
-                border:1px solid rgba(59,74,68,0.10);
-                box-shadow:0 24px 48px rgba(0,0,0,0.4); position:relative; overflow:hidden;">
-        <!-- Glow accent -->
-        <div style="position:absolute; top:-80px; right:-80px; width:240px; height:240px;
-                    border-radius:50%; background:radial-gradient(circle, {accent_rgba} 0%, transparent 70%);
-                    pointer-events:none;"></div>
-
-        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:2rem; position:relative; z-index:1;">
-            <div>
-                <p style="font-family:'Space Grotesk',sans-serif; font-size:9px; text-transform:uppercase;
-                           letter-spacing:0.3em; color:#BACAC3; margin:0 0 8px 0;">Failure Probability</p>
-                <div style="display:flex; align-items:baseline; gap:12px;">
-                    <span style="font-family:'Space Grotesk',sans-serif; font-size:5rem; font-weight:900;
-                                 letter-spacing:-0.05em; color:#E5E2E1; line-height:1;">
-                        {failure_pct:.2f}<span style="font-size:2rem; color:{accent_color};">%</span></span>
-                    <div style="padding:4px 12px; background:{accent_rgba};
-                                border:1px solid {accent_border}; border-radius:999px;">
-                        <span style="font-size:9px; font-weight:700; color:{accent_color};
-                                     text-transform:uppercase; letter-spacing:0.1em; font-family:'Space Grotesk',sans-serif;">
-                            {status_label}</span>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align:right;">
-                <span style="font-family:monospace; font-size:10px; color:#BACAC3;">{NOW_UTC}</span>
-                <div style="display:flex; align-items:center; gap:6px; justify-content:flex-end; margin-top:8px;">
-                    <div style="width:7px; height:7px; background:{accent_color}; border-radius:50%;
-                                animation:{pulse_anim} 2s ease-in-out infinite;"></div>
-                    <span style="font-family:'Space Grotesk',sans-serif; font-size:9px; text-transform:uppercase;
-                                 letter-spacing:0.15em; color:{accent_color};">Live Feed</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Dual-color progress bar -->
-        <div style="width:100%; height:6px; background:#1C1B1B; border-radius:999px;
-                    overflow:hidden; display:flex; gap:2px; position:relative; z-index:1;">
-            <div style="height:100%; width:{safe_w:.1f}%; background:{accent_color};
-                        box-shadow:0 0 10px rgba(69,253,210,0.5); border-radius:999px 0 0 999px;"></div>
-            <div style="height:100%; width:{danger_w:.1f}%; background:#D30017; border-radius:0 999px 999px 0;"></div>
-        </div>
-        <div style="display:flex; justify-content:space-between; margin-top:8px; position:relative; z-index:1;">
-            <span style="font-family:'Space Grotesk',sans-serif; font-size:9px; text-transform:uppercase;
-                         letter-spacing:0.15em; color:#BACAC3;">Safe Operating Zone</span>
-            <span style="font-family:'Space Grotesk',sans-serif; font-size:9px; text-transform:uppercase;
-                         letter-spacing:0.15em; color:#BACAC3;">Critical Threshold (85%)</span>
-        </div>
-
-        {
-            f'''<div style="margin-top:1.5rem; padding:14px 16px; border-radius:8px; position:relative; z-index:1;
-                         background:rgba(211,0,23,0.08); border:1px solid rgba(211,0,23,0.2);">
-                <p style="color:#ff6b6b; font-size:12px; font-weight:700; margin:0; letter-spacing:0.05em;">
-                    🚨 CRITICAL ALERT — Failure probability is {failure_pct:.1f}%.
-                    Immediate maintenance intervention recommended.</p>
-            </div>'''
-            if is_critical and st.session_state.failure_pct is not None else
-            f'''<div style="margin-top:1.5rem; padding:14px 16px; border-radius:8px; position:relative; z-index:1;
-                         background:rgba(69,253,210,0.06); border:1px solid rgba(69,253,210,0.12);">
-                <p style="color:#45FDD2; font-size:12px; font-weight:600; margin:0; letter-spacing:0.03em;">
-                    {'✅ Machine Healthy — Failure probability is ' + f"{failure_pct:.1f}%" + '. All readings within normal parameters.' if st.session_state.failure_pct is not None else '👈 Adjust sensor inputs in the sidebar and click Run Prediction.'}</p>
-            </div>'''
-        }
-    </div>
-    """, unsafe_allow_html=True)
 
 # Spacer
 st.markdown("<br/>", unsafe_allow_html=True)
