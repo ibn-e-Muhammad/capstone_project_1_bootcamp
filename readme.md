@@ -9,7 +9,7 @@
 ---
 
 ## 2. Dataset
-**Source:** AI4I 2020 Predictive Maintenance Dataset.
+**Source:** "[kaggle dataset link](https://www.kaggle.com/datasets/stephanmatzka/predictive-maintenance-dataset-ai4i-2020)"
 
 **File:** `ai4i2020.csv`
 

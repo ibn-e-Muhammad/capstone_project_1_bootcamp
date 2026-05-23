@@ -421,15 +421,15 @@ with st.sidebar:
     )
 
     st.markdown('<p style="font-size:9px; text-transform:uppercase; letter-spacing:0.2em; color:#BACAC3; margin:12px 0 4px; font-family:Space Grotesk,sans-serif;">🌡 Temperature</p>', unsafe_allow_html=True)
-    air_temp = st.number_input("Air Temperature [K]", min_value=295.0, max_value=305.0, value=300.0, step=0.1, format="%.1f")
-    process_temp = st.number_input("Process Temperature [K]", min_value=305.0, max_value=315.0, value=310.0, step=0.1, format="%.1f")
+    air_temp = st.number_input("Air Temperature [K]", value=300.0, step=0.1, format="%.1f")
+    process_temp = st.number_input("Process Temperature [K]", value=310.0, step=0.1, format="%.1f")
 
     st.markdown('<p style="font-size:9px; text-transform:uppercase; letter-spacing:0.2em; color:#BACAC3; margin:12px 0 4px; font-family:Space Grotesk,sans-serif;">🔄 Mechanical Load</p>', unsafe_allow_html=True)
-    rot_speed = st.number_input("Rotational Speed [rpm]", min_value=1168, max_value=2886, value=1538, step=10)
-    torque = st.number_input("Torque [Nm]", min_value=3.8, max_value=76.6, value=40.0, step=0.5, format="%.1f")
+    rot_speed = st.number_input("Rotational Speed [rpm]", value=1538, step=10)
+    torque = st.number_input("Torque [Nm]", value=40.0, step=0.5, format="%.1f")
 
     st.markdown('<p style="font-size:9px; text-transform:uppercase; letter-spacing:0.2em; color:#BACAC3; margin:12px 0 4px; font-family:Space Grotesk,sans-serif;">🔩 Wear</p>', unsafe_allow_html=True)
-    tool_wear = st.number_input("Tool Wear [min]", min_value=0, max_value=253, value=107, step=1)
+    tool_wear = st.number_input("Tool Wear [min]", value=107, step=1)
 
     st.markdown("<br/>", unsafe_allow_html=True)
     predict_button = st.button("⚡  Run Prediction", use_container_width=True)
@@ -495,16 +495,18 @@ if predict_button:
     st.session_state.health_pct = (1 - proba) * 100
     st.session_state.last_input_df = input_df
 
-# Resolve display values
-failure_pct = st.session_state.failure_pct if st.session_state.failure_pct is not None else 0.42
-health_pct  = st.session_state.health_pct  if st.session_state.health_pct  is not None else 94.0
-is_critical = failure_pct >= 85
+failure_raw = st.session_state.failure_pct
+health_raw = st.session_state.health_pct
+has_prediction = failure_raw is not None and health_raw is not None
+failure_pct = float(failure_raw) if failure_raw is not None else 0.0
+health_pct = float(health_raw) if health_raw is not None else 0.0
+is_critical = has_prediction and failure_pct >= 85
 
 # Dynamic color tokens
-accent_color  = "#D30017" if is_critical else "#45FDD2"
+accent_color  = "#D30019CC" if is_critical else "#45FDD2"
 accent_rgba   = "rgba(211,0,23,0.15)" if is_critical else "rgba(69,253,210,0.10)"
 accent_border = "rgba(211,0,23,0.25)" if is_critical else "rgba(69,253,210,0.20)"
-status_label  = "CRITICAL THRESHOLD" if is_critical else "NOMINAL STATE"
+status_label  = "AWAITING INPUT" if not has_prediction else ("CRITICAL THRESHOLD" if is_critical else "NOMINAL STATE")
 pulse_anim    = "pulse-ring-danger" if is_critical else "pulse-ring"
 
 # =============================================================================
@@ -579,7 +581,7 @@ with col_ring:
             </div>
             <p style="font-family:'Space Grotesk',sans-serif; font-size:9px; text-transform:uppercase;
                       letter-spacing:0.2em; color:#BACAC3; margin:0;">
-                Operational Stability: {'⚠ CRITICAL' if is_critical else 'Optimal'}</p>
+                Operational Stability: {'AWAITING INPUT' if not has_prediction else ('⚠ CRITICAL' if is_critical else 'Optimal')}</p>
         </div>
     </div>
     """).strip(), unsafe_allow_html=True)
