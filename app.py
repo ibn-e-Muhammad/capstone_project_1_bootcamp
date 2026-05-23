@@ -6,11 +6,20 @@
 # Demo credentials: Operator ID = STATION_NODE_492  |  Key = kinetic2024
 # =============================================================================
 
+# =============================================================================
+# app.py — KINETIC ENGINE | Machine Failure Prediction System
+# Phase 2: Streamlit Deployment & Inference Engine
+# =============================================================================
+# Run with: streamlit run app.py
+# Demo credentials: Operator ID = STATION_NODE_492  |  Key = kinetic2024
+# =============================================================================
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import joblib
 import plotly.graph_objects as go
+import textwrap
 from datetime import datetime, timezone
 
 # =============================================================================
@@ -177,7 +186,7 @@ h1, h2, h3, h4, h5, h6,
 }
 </style>
 """
-st.markdown(GLOBAL_CSS, unsafe_allow_html=True)
+st.markdown(textwrap.dedent(GLOBAL_CSS), unsafe_allow_html=True)
 
 # =============================================================================
 # STEP 3: LOGIN SCREEN (Session-State Gate)
@@ -282,7 +291,7 @@ if not st.session_state.authenticated:
     st.markdown(LOGIN_HTML, unsafe_allow_html=True)
 
     # Glassmorphism card wrapper
-    st.markdown("""
+    st.markdown(textwrap.dedent("""
     <div style="background:rgba(42,42,42,0.7); backdrop-filter:blur(24px);
                 border-radius:12px; padding:2rem; position:relative; z-index:2;
                 border:1px solid rgba(59,74,68,0.12);
@@ -292,9 +301,7 @@ if not st.session_state.authenticated:
         <p style="font-size:13px; color:#BACAC3; margin:0 0 1.8rem 0;">
             Input operational credentials to proceed.</p>
     </div>
-    """, unsafe_allow_html=True)
-
-    # Actual Streamlit form (works inside the card via CSS offset)
+    """), unsafe_allow_html=True)
     with st.form("login_form"):
         st.markdown('<div class="login-form">', unsafe_allow_html=True)
         operator_id = st.text_input(
@@ -317,16 +324,16 @@ if not st.session_state.authenticated:
             st.session_state.authenticated = True
             st.rerun()
         else:
-            st.markdown("""
+                st.markdown(textwrap.dedent("""
             <div style="background:rgba(211,0,23,0.1); border:1px solid rgba(211,0,23,0.25);
                         border-radius:8px; padding:12px 16px; margin-top:12px; position:relative; z-index:2;">
                 <p style="color:#ff6b6b; font-size:12px; font-weight:600; margin:0; letter-spacing:0.05em;">
                     ⚠ AUTH DENIED — Invalid credentials. Try STATION_NODE_492 / kinetic2024</p>
             </div>
-            """, unsafe_allow_html=True)
+                """), unsafe_allow_html=True)
 
     # Status footer on login page
-    st.markdown("""
+    st.markdown(textwrap.dedent("""
     <div style="display:flex; justify-content:space-between; align-items:center;
                 margin-top:3rem; padding:0 4px; opacity:0.5; position:relative; z-index:2;">
         <div style="display:flex; align-items:center; gap:10px;">
@@ -337,7 +344,7 @@ if not st.session_state.authenticated:
         </div>
         <span style="font-family:monospace; font-size:9px; color:#BACAC3;">v4.8.2 // LATENCY: 2ms</span>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
     st.stop()  # Halt rendering — don't show anything below this point
 
@@ -433,7 +440,7 @@ with st.sidebar:
     # ── Alerts & History panel in sidebar ──
     NOW = datetime.now(timezone.utc).strftime("%H:%M:%S")
     H1 = (datetime.now(timezone.utc).replace(microsecond=0).strftime("%H:%M:%S"))
-    st.markdown(f"""
+    st.markdown(textwrap.dedent(f"""
     <div style="background:#1C1B1B; border-radius:10px; overflow:hidden;
                 border:1px solid rgba(59,74,68,0.12);">
         <div style="padding:14px 16px; background:rgba(42,42,42,0.5);
@@ -497,7 +504,7 @@ with st.sidebar:
         <span class="material-symbols-outlined" style="color:#BACAC3; font-size:18px;">settings</span>
         <span>Settings</span>
     </div>
-    """, unsafe_allow_html=True)
+    """), unsafe_allow_html=True)
 
     # Logout button
     if st.button("↩  System Logout", use_container_width=True):
@@ -750,13 +757,13 @@ def chart_card(col, fig, title, val_str, is_danger=False):
             st.plotly_chart(fig, use_container_width=True, config={"displayModeBar": False})
 
 # Section header
-st.markdown("""
+st.markdown(textwrap.dedent("""
 <div style="display:flex; align-items:center; gap:10px; margin-bottom:1rem;">
     <span class="material-symbols-outlined" style="color:#45FDD2; font-size:18px;">monitoring</span>
     <p style="font-family:'Space Grotesk',sans-serif; font-size:9px; font-weight:700; text-transform:uppercase;
               letter-spacing:0.25em; color:#BACAC3; margin:0;">Live Sensor Telemetry</p>
 </div>
-""", unsafe_allow_html=True)
+"""), unsafe_allow_html=True)
 
 chart_col1, chart_col2 = st.columns(2, gap="medium")
 
